@@ -3,8 +3,12 @@ import ImageUploader from "./components/ImageUploader";
 
 function App() {
   return (
-    <div>
-      <h1>NFT Generator</h1>
+    <div style={{ textAlign: "center" }}>
+      <header
+        style={{ margin: "32px auto", fontSize: "24px", fontWeight: "bold" }}
+      >
+        NFT Generator
+      </header>
       <ImageUploader />
     </div>
   );
