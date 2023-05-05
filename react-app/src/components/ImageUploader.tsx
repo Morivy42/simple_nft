@@ -1,23 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useRef, ChangeEvent, FormEvent } from "react";
+import axios from "axios";
 
 function ImageUploader() {
-  const [image, setImage] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
+  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        setImage(e.target?.result?.toString() ?? null);
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setImageUrl(reader.result as string);
       };
-      reader.readAsDataURL(event.target.files[0]);
     }
   };
 
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (fileInputRef.current?.files) {
+      const formData = new FormData();
+      formData.append("file", fileInputRef.current.files[0]);
+      axios.post("/upload", formData).then(() => {
+        console.log("File uploaded successfully");
+      });
+    }
+  };
   const handleMintClick = () => {
     // Logic for minting the image goes here
     console.log("minting the image");
   };
-
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
@@ -33,9 +45,9 @@ function ImageUploader() {
           border: "2px solid black",
         }}
       >
-        {image ? (
+        {imageUrl ? (
           <img
-            src={image}
+            src={imageUrl}
             alt="Uploaded image"
             style={{
               maxWidth: "100%",
@@ -47,12 +59,16 @@ function ImageUploader() {
           <span style={{ color: "gray" }}>No image uploaded</span>
         )}
       </div>
-      <div style={{ display: "flex", marginTop: "16px" }}>
-        <input type="file" onChange={handleImageChange} />
-        <button style={{ marginLeft: "8px" }} onClick={handleMintClick}>
-          Mint!
-        </button>
-      </div>
+        <div style={{ display: "flex", marginTop: "16px" }}>
+          <form onSubmit={onSubmit}>
+            <input type="file" ref={fileInputRef} onChange={handleFileInputChange} />
+            <button type="submit">Upload</button>
+          </form>
+          <button style={{ marginLeft: "8px" }} onClick={handleMintClick}>
+            Mint!
+          </button>
+        </div>
+      
     </div>
   );
 }

@@ -58,6 +58,7 @@ const App = () => {
       </header>
       <ImageUploader />
       <div>Injected Provider {hasProvider ? 'DOES' : 'DOES NOT'} Exist</div>
+      
       { window.ethereum?.isMetaMask && wallet.accounts.length < 1 &&  /* Updated */
         <button onClick={handleConnect}>Connect MetaMask</button>
       }
